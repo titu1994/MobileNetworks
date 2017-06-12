@@ -158,7 +158,7 @@ class DepthwiseConv2D(Conv2D):
 
     def build(self, input_shape):
         if len(input_shape) < 4:
-            raise ValueError('Inputs to `SeparableConv2D` should have rank 4. '
+            raise ValueError('Inputs to `DepthwiseConv2D` should have rank 4. '
                              'Received input shape:', str(input_shape))
         if self.data_format == 'channels_first':
             channel_axis = 1
@@ -166,7 +166,7 @@ class DepthwiseConv2D(Conv2D):
             channel_axis = 3
         if input_shape[channel_axis] is None:
             raise ValueError('The channel dimension of the inputs to '
-                             '`SeparableConv2D` '
+                             '`DepthwiseConv2D` '
                              'should be defined. Found `None`.')
         input_dim = int(input_shape[channel_axis])
         depthwise_kernel_shape = (self.kernel_size[0],
@@ -196,11 +196,13 @@ class DepthwiseConv2D(Conv2D):
     def call(self, inputs, training=None):
         padding = _preprocess_padding(self.padding)
         strides = (1,) + self.strides + (1,)
+        data_format = "NHWC" if self.data_format == 'channels_last' else "NCHW"
 
         outputs = tf.nn.depthwise_conv2d(inputs, self.depthwise_kernel,
                                          strides=strides,
                                          padding=padding,
-                                         rate=self.dilation_rate)
+                                         rate=self.dilation_rate,
+                                         data_format=data_format)
 
         if self.bias:
             outputs = K.bias_add(
