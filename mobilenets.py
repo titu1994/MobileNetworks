@@ -20,8 +20,8 @@ import keras.backend as K
 
 from depthwise_conv import DepthwiseConvolution2D
 
-TF_WEIGHTS_PATH = ''
-TF_WEIGHTS_PATH_NO_TOP = ''
+TF_WEIGHTS_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_tf_dim_ordering_tf_kernels.h5'
+TF_WEIGHTS_PATH_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_tf_dim_ordering_tf_kernels_no_top.h5'
 
 
 def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
