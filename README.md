@@ -34,4 +34,4 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 ## Conversion of Tensorflow Weights
 The weights were originally from https://github.com/Zehaos/MobileNet, which used Tensorflow checkpoints. 
 
-The _weight_extraction folder contains instructions on converting a tensorflow checkpoint weights into Numpy arrays, and then load them into Keras weight matrices.
+The `_weight_extraction` folder contains instructions on converting a tensorflow checkpoint weights into Numpy arrays, and then load them into Keras weight matrices.
