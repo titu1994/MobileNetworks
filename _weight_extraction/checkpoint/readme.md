@@ -1,0 +1,1 @@
+Add the checkpoint from https://github.com/Zehaos/MobileNet here!
