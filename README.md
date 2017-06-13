@@ -31,6 +31,25 @@ model = MobileNets(alpha=1, depth_multiplier=1)
 
 The model can be tested by running the `predict_imagenet.py` script, using the given elephant image. It will return a top 5 prediction score, where "African Elephant" score will be around 96%.
 
+<table>
+<tr align='center'>
+<td>Image</td>
+<td>Predictions</td>
+</tr>
+<tr align='left'>
+<td>
+<img src="https://github.com/titu1994/MobileNetworks/blob/master/elephant.jpg?raw=true" width=100% height=100%>
+</td>
+<td>
+('African_elephant', 0.96345246), <br>
+('lesser_panda', 0.018536508), <br>
+('echidna', 0.018011011), <br>
+('bison', 3.4793988e-08), <br>
+('llama', 3.1314428e-08)
+</td>
+</tr>
+</table>
+
 ## Conversion of Tensorflow Weights
 The weights were originally from https://github.com/Zehaos/MobileNet, which used Tensorflow checkpoints. 
 
