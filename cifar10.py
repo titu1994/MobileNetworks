@@ -16,7 +16,7 @@ from mobilenets import MobileNets
 
 batch_size = 100
 nb_classes = 10
-nb_epoch = 300
+nb_epoch = 200
 
 img_rows, img_cols = 32, 32
 img_channels = 3
@@ -25,12 +25,12 @@ img_dim = (img_channels, img_rows, img_cols) if K.image_dim_ordering() == "th" e
 alpha = 1
 depth_multiplier = 1
 
-model = MobileNets(img_dim, alpha=1, depth_multiplier=1,  classes=nb_classes)
+model = MobileNets(img_dim, alpha=1, depth_multiplier=1,  classes=nb_classes, weights=None)
 print("Model created")
 
 model.summary()
 
-optimizer = Adam(lr=1e-3)  # Using Adam instead of SGD to speed up training
+optimizer = Adam(lr=5e-4)  # Using Adam instead of SGD to speed up training
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=["accuracy"])
 print("Finished compiling")
 print("Building model...")
@@ -40,8 +40,16 @@ print("Building model...")
 trainX = trainX.astype('float32')
 testX = testX.astype('float32')
 
-trainX /= 255.
-testX /= 255.
+
+def preprocess(x):
+    x /= 255.
+    x -= 0.5
+    x *= 2.
+    return x
+
+
+trainX = preprocess(trainX)
+testX = preprocess(testX)
 
 Y_train = np_utils.to_categorical(trainY, nb_classes)
 Y_test = np_utils.to_categorical(testY, nb_classes)
@@ -65,10 +73,11 @@ if os.path.exists(weights_file):
     print("Model loaded.")
 
 lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=np.sqrt(0.1),
-                               cooldown=0, patience=10, min_lr=1e-6)
+                               cooldown=0, patience=5, min_lr=1e-6)
 
 model_checkpoint = ModelCheckpoint(weights_file, monitor="val_acc", save_best_only=True,
-                                   save_weights_only=True, mode='auto', verbose=True)
+                                   save_weights_only=True, mode='max', verbose=True)
+
 
 callbacks = [lr_reducer, model_checkpoint]
 
@@ -77,7 +86,7 @@ model.fit_generator(generator.flow(trainX, Y_train, batch_size=batch_size),
                     epochs=nb_epoch,
                     callbacks=callbacks,
                     validation_data=(testX, Y_test),
-                    validation_steps=testX.shape[0] // batch_size, verbose=1)
+                    validation_steps=testX.shape[0] // batch_size, verbose=2)
 
 yPreds = model.predict(testX)
 yPred = np.argmax(yPreds, axis=1)

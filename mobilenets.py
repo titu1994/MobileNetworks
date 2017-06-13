@@ -196,6 +196,8 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier)
     return x
 
 if __name__ == "__main__":
-    model = MobileNets(alpha=1, depth_multiplier=1)
+    from keras import backend as K
+    K.set_image_data_format('channels_first')
+    model = MobileNets(alpha=1, depth_multiplier=1, weights=None)
 
     model.summary()
