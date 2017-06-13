@@ -20,7 +20,9 @@ import keras.backend as K
 
 from depthwise_conv import DepthwiseConvolution2D
 
+TH_WEIGHTS_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_th_dim_ordering_tf_kernels.h5'
 TF_WEIGHTS_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_tf_dim_ordering_tf_kernels.h5'
+TH_WEIGHTS_PATH_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_th_dim_ordering_tf_kernels_no_top.h5'
 TF_WEIGHTS_PATH_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_tf_dim_ordering_tf_kernels_no_top.h5'
 
 
@@ -35,7 +37,8 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
         # Arguments
             input_shape: optional shape tuple, only to be specified
                 if `include_top` is False (otherwise the input shape
-                has to be `(224, 224, 3)` (with `channels_last` dim ordering).
+                has to be `(224, 224, 3)` (with `channels_last` data format)
+                or (3, 224, 224) (with `channels_first` data format).
                 It should have exactly 3 inputs channels,
                 and width and height should be no smaller than 32.
                 E.g. `(200, 200, 3)` would be one valid value.
@@ -99,8 +102,16 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
 
             # Default parameters match. Weights for this model exist:
             if K.image_data_format() == 'channels_first':
-                raise AttributeError('Depthwise convolutions are only supported in '
-                                     'data format "channels_last" in Tensorflow.')
+                if include_top:
+                    weights_path = get_file('mobilenet_th_dim_ordering_tf_kernels.h5',
+                                            TH_WEIGHTS_PATH,
+                                            cache_subdir='models')
+                else:
+                    weights_path = get_file('mobilenet_th_dim_ordering_tf_kernels_no_top.h5',
+                                            TH_WEIGHTS_PATH_NO_TOP,
+                                            cache_subdir='models')
+
+                model.load_weights(weights_path)
             else:
                 if include_top:
                     weights_path = get_file('mobilenet_tf_dim_ordering_tf_kernels.h5',
@@ -185,8 +196,6 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier)
     return x
 
 if __name__ == "__main__":
-    from keras import backend as K
-    K.set_image_data_format('channels_first')
-    model = MobileNets(alpha=1, depth_multiplier=1, weights=None)
+    model = MobileNets(alpha=1, depth_multiplier=1)
 
     model.summary()
