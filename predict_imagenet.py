@@ -16,7 +16,6 @@ def preprocess_input(x):
 
 if __name__ == '__main__':
     model = MobileNets()
-    model.load_weights('weights/mobilenet_imagenet_tf.h5')
 
     img_path = 'elephant.jpg'
     img = image.load_img(img_path, target_size=(224, 224))

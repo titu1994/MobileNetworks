@@ -156,6 +156,10 @@ class DepthwiseConv2D(Conv2D):
         self.depthwise_constraint = constraints.get(depthwise_constraint)
         self.bias_initializer = initializers.get(bias_initializer)
 
+        self._padding = _preprocess_padding(self.padding)
+        self._strides = (1,) + self.strides + (1,)
+        self._data_format = "NHWC" if self.data_format == 'channels_last' else "NCHW"
+
     def build(self, input_shape):
         if len(input_shape) < 4:
             raise ValueError('Inputs to `DepthwiseConv2D` should have rank 4. '
@@ -194,15 +198,11 @@ class DepthwiseConv2D(Conv2D):
         self.built = True
 
     def call(self, inputs, training=None):
-        padding = _preprocess_padding(self.padding)
-        strides = (1,) + self.strides + (1,)
-        data_format = "NHWC" if self.data_format == 'channels_last' else "NCHW"
-
         outputs = tf.nn.depthwise_conv2d(inputs, self.depthwise_kernel,
-                                         strides=strides,
-                                         padding=padding,
+                                         strides=self._strides,
+                                         padding=self._padding,
                                          rate=self.dilation_rate,
-                                         data_format=data_format)
+                                         data_format=self._data_format)
 
         if self.bias:
             outputs = K.bias_add(
