@@ -5,7 +5,7 @@ Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Ne
 Includes weights trained on ImageNet (obtained from https://github.com/Zehaos/MobileNet, and then converted) in the default model, and a custom layer which performs DepthwiseConvolution2D.
 
 # Benefits of Mobile Nets
-As explained in the paper, large neural networks can be exhorbitant, both in the amount of memory they require to perform predictions, to the actual size of the model weights. 
+As explained in the paper, large neural networks can be exorbitant, both in the amount of memory they require to perform predictions, to the actual size of the model weights.
 
 Therefore, by using Depthwise Convolutions, we can reduce a significant portion of the model size while still retaining very good performance.
 
