@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from __future__ import division
 
 from keras.models import Model
-from keras.layers.core import Dense, Activation
+from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import GlobalAveragePooling2D
 from keras.layers import Input
@@ -27,7 +27,7 @@ TF_WEIGHTS_PATH_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/do
 
 
 def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
-               include_top=True, weights='imagenet',
+               dropout=1e-3, include_top=True, weights='imagenet',
                input_tensor=None, classes=1001):
     ''' Instantiate the MobileNet architecture.
         Note that only TensorFlow is supported for now,
@@ -45,6 +45,7 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
             alpha: width multiplier of the MobileNet.
             depth_multiplier: depth multiplier for depthwise convolution
                 (also called the resolution multiplier)
+            dropout: dropout rate
             include_top: whether to include the fully-connected
                 layer at the top of the network.
             weights: `None` (random initialization) or
@@ -82,7 +83,7 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
         else:
             img_input = input_tensor
 
-    x = __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier)
+    x = __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier, dropout)
 
     # Ensure that the model takes into account
     # any potential predecessors of `input_tensor`.
@@ -157,7 +158,7 @@ def __depthwise_conv_block(input, depthwise_conv_filters, pointwise_conv_filters
     return x
 
 
-def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier):
+def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier, dropout):
     ''' Creates a MobileNet model with specified parameters
     Args:
         classes: Number of output classes
@@ -166,6 +167,7 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier)
         alpha: width multiplier of the MobileNet.
         depth_multiplier: depth multiplier for depthwise convolution
                           (also called the resolution multiplier)
+        dropout: dropout rate
     Returns: a Keras Model
     '''
 
@@ -191,13 +193,12 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier)
     x = GlobalAveragePooling2D()(x)
 
     if include_top:
+        x = Dropout(dropout)(x)
         x = Dense(classes, activation='softmax')(x)
 
     return x
 
 if __name__ == "__main__":
-    from keras import backend as K
-    K.set_image_data_format('channels_first')
-    model = MobileNets(alpha=1, depth_multiplier=1, weights=None)
+    model = MobileNets(alpha=1, depth_multiplier=1, weights='imagenet')
 
     model.summary()
