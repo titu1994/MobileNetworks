@@ -22,10 +22,10 @@ img_rows, img_cols = 32, 32
 img_channels = 3
 
 img_dim = (img_channels, img_rows, img_cols) if K.image_dim_ordering() == "th" else (img_rows, img_cols, img_channels)
-alpha = 1
+alpha = 1.0
 depth_multiplier = 1
 
-model = MobileNets(img_dim, alpha=1, depth_multiplier=1,  classes=nb_classes, weights=None)
+model = MobileNets(img_dim, alpha=alpha, depth_multiplier=depth_multiplier,  classes=nb_classes, weights=None)
 print("Model created")
 
 model.summary()
