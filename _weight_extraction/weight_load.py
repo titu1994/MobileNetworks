@@ -93,7 +93,7 @@ print("Loaded final conv classifier weights")
 
 layer_weights_saved[-3] = True
 
-model.save_weights('mobilenet_imagenet_tf.h5')
+model.save_weights('mobilenet_imagenet_tf.h5', overwrite=True)
 print("Model saved")
 
 # perform check that all weights that could have been loaded, Have been loaded!

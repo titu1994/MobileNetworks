@@ -40,13 +40,9 @@ legacy_depthwise_conv2d_support = generate_legacy_interface(
                  ('b_regularizer', 'bias_regularizer'),
                  ('b_constraint', 'bias_constraint'),
                  ('bias', 'use_bias')],
-    value_conversions={
-                      'dim_ordering': {
-                                       'tf': 'channels_last',
-                                       'th': 'channels_first',
-                                       'default': None
-                                       }
-                      },
+    value_conversions={'dim_ordering': {'tf': 'channels_last',
+                                        'th': 'channels_first',
+                                        'default': None}},
     preprocessor=depthwise_conv2d_args_preprocessor)
 
 
@@ -124,7 +120,7 @@ class DepthwiseConv2D(Conv2D):
                  kernel_size,
                  strides=(1, 1),
                  padding='valid',
-                 depth_multiplier=1,
+                 depth_multiplier=1.0,
                  data_format=None,
                  activation=None,
                  use_bias=True,
@@ -179,7 +175,7 @@ class DepthwiseConv2D(Conv2D):
         self.depthwise_kernel = self.add_weight(
             shape=depthwise_kernel_shape,
             initializer=self.depthwise_initializer,
-            name='depthwise_conv_kernel',
+            name='depthwise_kernel',
             regularizer=self.depthwise_regularizer,
             constraint=self.depthwise_constraint)
 
@@ -221,11 +217,11 @@ class DepthwiseConv2D(Conv2D):
         if self.data_format == 'channels_first':
             rows = input_shape[2]
             cols = input_shape[3]
-            filters = input_shape[1] * self.depth_multiplier
+            out_filters = input_shape[1] * self.depth_multiplier
         elif self.data_format == 'channels_last':
             rows = input_shape[1]
             cols = input_shape[2]
-            filters = input_shape[3] * self.depth_multiplier
+            out_filters = input_shape[3] * self.depth_multiplier
 
         rows = conv_utils.conv_output_length(rows, self.kernel_size[0],
                                              self.padding,
@@ -235,9 +231,9 @@ class DepthwiseConv2D(Conv2D):
                                              self.strides[1])
 
         if self.data_format == 'channels_first':
-            return (input_shape[0], filters, rows, cols)
+            return (input_shape[0], out_filters, rows, cols)
         elif self.data_format == 'channels_last':
-            return (input_shape[0], rows, cols, filters)
+            return (input_shape[0], rows, cols, out_filters)
 
     def get_config(self):
         config = super(DepthwiseConv2D, self).get_config()

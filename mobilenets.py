@@ -70,12 +70,18 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
         raise ValueError('If using `weights` as ImageNet with `include_top`'
                          ' as true, `classes` should be 1001')
 
-    # Determine proper input shape
+    # Determine proper input shape. Note, include_top is False by default, as
+    # input shape can be anything larger than 32x32 and the same number of parameters
+    # will be used.
     input_shape = _obtain_input_shape(input_shape,
                                       default_size=224,
                                       min_size=32,
                                       data_format=K.image_data_format(),
                                       include_top=False)
+
+    # If input shape is still None, provide a default input shape
+    if input_shape is None:
+        input_shape = (224, 224, 3) if K.image_data_format() == 'channels_last' else (3, 224, 224)
 
     if input_tensor is None:
         img_input = Input(shape=input_shape)
@@ -202,11 +208,23 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
         x = Reshape(shape)(x)
         x = Dropout(dropout)(x)
         x = Convolution2D(classes, (1, 1), padding='same', name='conv_preds')(x)
-        x = Reshape((classes,))(x)
         x = Activation('softmax')(x)
+        x = Reshape((classes,))(x)
 
     return x
 
 if __name__ == "__main__":
-    model = MobileNets(alpha=1, depth_multiplier=1, weights=None)
-    model.summary()
+    pass
+    import tensorflow as tf
+    with tf.Session() as sess:
+        K.set_session(sess)
+
+        model = MobileNets(input_shape=(224, 224, 3), alpha=1, depth_multiplier=1, weights=None)
+        model.summary()
+
+        graph = sess.graph
+
+        writer = tf.summary.FileWriter('logs/keras/', graph)
+        writer.close()
+
+
