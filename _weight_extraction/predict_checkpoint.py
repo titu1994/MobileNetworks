@@ -48,5 +48,5 @@ with tf.Graph().as_default():
 
     graph = sess.graph
 
-    # writer = tf.summary.FileWriter('logs/', graph)
-    # writer.close()
+    writer = tf.summary.FileWriter('logs/', graph)
+    writer.close()
