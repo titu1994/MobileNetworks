@@ -43,8 +43,18 @@ print()
 
 model = MobileNets((224, 224, 3), weights=None)
 
-for i, layer in enumerate(model.layers):
-    print(i, layer.name)
+#for i, layer in enumerate(model.layers):
+#    print(i, layer.name)
+
+# used for sanity check that all weights have been loaded
+layers = model.layers
+layer_has_weights = [(True if len(layer.get_weights()) != 0 else False)
+                     for layer in model.layers]
+layer_weights_saved = [False for _ in range(len(model.layers))]
+
+# these two layers will be loaded in the next line
+layer_weights_saved[1] = True
+layer_weights_saved[2] = True
 
 conv1_weights = [np.load(conv1_wb[0])]
 model.layers[1].set_weights(conv1_weights)
@@ -68,6 +78,12 @@ for i, dw in enumerate(dwlist):
     model.layers[layer_index + 3].set_weights(pw_weights_biases)
     model.layers[layer_index + 4].set_weights(pw_bn)
 
+    # for sanity check, set True for all layers whise weights were changed
+    layer_weights_saved[layer_index] = True
+    layer_weights_saved[layer_index + 1] = True
+    layer_weights_saved[layer_index + 3] = True
+    layer_weights_saved[layer_index + 4] = True
+
     print('Loaded DW layer %d weights' % (i + 1))
     layer_index += 6
 
@@ -75,5 +91,16 @@ fc_weights_bias = [np.load(fcn[1]), np.load(fcn[0])]
 model.layers[-3].set_weights(fc_weights_bias)
 print("Loaded final conv classifier weights")
 
+layer_weights_saved[-3] = True
+
 model.save_weights('mobilenet_imagenet_tf.h5')
 print("Model saved")
+
+# perform check that all weights that could have been loaded, Have been loaded!
+print('\n Begin sanity check...')
+for layer_id, has_weights in enumerate(layer_has_weights):
+    if has_weights and not layer_weights_saved[layer_id]:
+        # weights were not saved! report
+        print("Layer id %d (%s) weights were not saved!" % (layer_id, model.layers[layer_id].name))
+
+print("Sanity check complete!")
