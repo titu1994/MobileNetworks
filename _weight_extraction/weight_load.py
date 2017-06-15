@@ -97,7 +97,7 @@ model.save_weights('mobilenet_imagenet_tf.h5')
 print("Model saved")
 
 # perform check that all weights that could have been loaded, Have been loaded!
-print('\n Begin sanity check...')
+print('\nBegin sanity check...')
 for layer_id, has_weights in enumerate(layer_has_weights):
     if has_weights and not layer_weights_saved[layer_id]:
         # weights were not saved! report

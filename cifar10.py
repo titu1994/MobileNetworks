@@ -69,7 +69,7 @@ if not os.path.exists(out_dir):
 weights_file = "weights/mobilenet_cifar.h5"
 
 if os.path.exists(weights_file):
-    model.load_weights(weights_file)
+    #model.load_weights(weights_file)
     print("Model loaded.")
 
 lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=np.sqrt(0.1),

@@ -135,7 +135,7 @@ def __conv_block(input, filters, alpha, kernel=(3, 3), strides=(1, 1)):
 
     x = Convolution2D(filters, kernel, padding='same', use_bias=False, strides=strides,
                       name='conv1')(input)
-    x = BatchNormalization(axis=channel_axis, name='conv1_bn', momentum=0.9997)(x)
+    x = BatchNormalization(axis=channel_axis, name='conv1_bn')(x)
     x = Activation(tf.nn.relu6, name='conv1_relu')(x)
 
     return x
@@ -148,12 +148,12 @@ def __depthwise_conv_block(input, pointwise_conv_filters, alpha,
 
     x = DepthwiseConvolution2D(kernel_size=(3, 3), padding='same', depth_multiplier=depth_multiplier,
                                strides=strides, use_bias=False, name='conv_dw_%d' % id)(input)
-    x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % id, momentum=0.9997)(x)
+    x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % id)(x)
     x = Activation(tf.nn.relu6, name='conv_dw_%d_relu' % id)(x)
 
     x = Convolution2D(pointwise_conv_filters, (1, 1), padding='same', use_bias=False, strides=(1, 1),
                       name='conv_pw_%d' % id)(x)
-    x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % id, momentum=0.9997)(x)
+    x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % id)(x)
     x = Activation(tf.nn.relu6, name='conv_pw_%d_relu' % id)(x)
 
     return x
@@ -195,9 +195,9 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
 
     if include_top:
         if K.image_data_format() == 'channels_first':
-            shape = (1024 * alpha, 1, 1)
+            shape = (int(1024 * alpha), 1, 1)
         else:
-            shape = (1, 1, 1024 * alpha)
+            shape = (1, 1, int(1024 * alpha))
 
         x = Reshape(shape)(x)
         x = Dropout(dropout)(x)
