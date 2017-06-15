@@ -60,7 +60,7 @@ conv1_weights = [np.load(conv1_wb[0])]
 model.layers[1].set_weights(conv1_weights)
 
 conv1_bn = [np.load(fn) for fn in conv1_bn]
-model.layers[2].set_weights(conv1_bn)
+model.layers[2].set_weights([conv1_bn[1], conv1_bn[0], conv1_bn[2], conv1_bn[3]])
 print("\nLoaded initail conv weights")
 
 layer_index = 4
@@ -73,10 +73,10 @@ for i, dw in enumerate(dwlist):
     pw_bn = [np.load(fn) for fn in dw[5:-1]]
 
     model.layers[layer_index].set_weights(dw_weights)
-    model.layers[layer_index + 1].set_weights(dw_bn)
+    model.layers[layer_index + 1].set_weights([dw_bn[1], dw_bn[0], dw_bn[2], dw_bn[3]])
 
     model.layers[layer_index + 3].set_weights(pw_weights_biases)
-    model.layers[layer_index + 4].set_weights(pw_bn)
+    model.layers[layer_index + 4].set_weights([pw_bn[1], pw_bn[0], pw_bn[2], pw_bn[3]])
 
     # for sanity check, set True for all layers whise weights were changed
     layer_weights_saved[layer_index] = True
