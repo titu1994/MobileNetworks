@@ -15,7 +15,7 @@ from keras.engine import InputSpec
 from keras.utils import conv_utils
 from keras.legacy.interfaces import conv2d_args_preprocessor, generate_legacy_interface
 from keras.layers import Conv2D
-from keras.backend.tensorflow_backend import _preprocess_padding
+from keras.backend.tensorflow_backend import _preprocess_padding, _preprocess_conv2d_input, _postprocess_conv2d_output
 
 import tensorflow as tf
 
@@ -59,8 +59,6 @@ class DepthwiseConv2D(Conv2D):
     The `depth_multiplier` argument controls how many
     output channels are generated per input channel in the depthwise step.
     # Arguments
-        filters: Integer, the dimensionality of the output space
-            (i.e. the number output of filters in the convolution).
         kernel_size: An integer or tuple/list of 2 integers, specifying the
             width and height of the 2D convolution window.
             Can be a single integer to specify the same value for
@@ -122,7 +120,7 @@ class DepthwiseConv2D(Conv2D):
     """
 
     @legacy_depthwise_conv2d_support
-    def __init__(self, filters,
+    def __init__(self,
                  kernel_size,
                  strides=(1, 1),
                  padding='valid',
@@ -139,7 +137,7 @@ class DepthwiseConv2D(Conv2D):
                  bias_constraint=None,
                  **kwargs):
         super(DepthwiseConv2D, self).__init__(
-            filters=filters,
+            filters=None,
             kernel_size=kernel_size,
             strides=strides,
             padding=padding,
@@ -186,7 +184,7 @@ class DepthwiseConv2D(Conv2D):
             constraint=self.depthwise_constraint)
 
         if self.use_bias:
-            self.bias = self.add_weight(shape=(self.filters,),
+            self.bias = self.add_weight(shape=(input_dim * self.depth_multiplier,),
                                         initializer=self.bias_initializer,
                                         name='bias',
                                         regularizer=self.bias_regularizer,
@@ -198,11 +196,15 @@ class DepthwiseConv2D(Conv2D):
         self.built = True
 
     def call(self, inputs, training=None):
+        inputs = _preprocess_conv2d_input(inputs, self.data_format)
+
         outputs = tf.nn.depthwise_conv2d(inputs, self.depthwise_kernel,
                                          strides=self._strides,
                                          padding=self._padding,
                                          rate=self.dilation_rate,
                                          data_format=self._data_format)
+
+        outputs = _postprocess_conv2d_output(outputs, self.data_format)
 
         if self.bias:
             outputs = K.bias_add(
@@ -219,9 +221,11 @@ class DepthwiseConv2D(Conv2D):
         if self.data_format == 'channels_first':
             rows = input_shape[2]
             cols = input_shape[3]
+            filters = input_shape[1] * self.depth_multiplier
         elif self.data_format == 'channels_last':
             rows = input_shape[1]
             cols = input_shape[2]
+            filters = input_shape[3] * self.depth_multiplier
 
         rows = conv_utils.conv_output_length(rows, self.kernel_size[0],
                                              self.padding,
@@ -231,9 +235,9 @@ class DepthwiseConv2D(Conv2D):
                                              self.strides[1])
 
         if self.data_format == 'channels_first':
-            return (input_shape[0], self.filters, rows, cols)
+            return (input_shape[0], filters, rows, cols)
         elif self.data_format == 'channels_last':
-            return (input_shape[0], rows, cols, self.filters)
+            return (input_shape[0], rows, cols, filters)
 
     def get_config(self):
         config = super(DepthwiseConv2D, self).get_config()

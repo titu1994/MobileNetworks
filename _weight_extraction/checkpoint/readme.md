@@ -1,1 +1,1 @@
-Add the checkpoint from https://github.com/Zehaos/MobileNet here!
+Add the 3 checkpoint files from https://github.com/Zehaos/MobileNet here!

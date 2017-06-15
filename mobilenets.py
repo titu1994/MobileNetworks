@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from __future__ import division
 
 from keras.models import Model
-from keras.layers.core import Dense, Activation, Dropout
+from keras.layers.core import Dense, Activation, Dropout, Reshape
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import GlobalAveragePooling2D
 from keras.layers import Input
@@ -17,6 +17,8 @@ from keras.utils.data_utils import get_file
 from keras.engine.topology import get_source_inputs
 from keras.applications.imagenet_utils import _obtain_input_shape
 import keras.backend as K
+
+import tensorflow as tf
 
 from depthwise_conv import DepthwiseConvolution2D
 
@@ -131,29 +133,28 @@ def __conv_block(input, filters, alpha, kernel=(3, 3), strides=(1, 1)):
     channel_axis = 1 if K.image_data_format() == 'channels_first' else -1
     filters = int(filters * alpha)
 
-    x = Convolution2D(filters, kernel, padding='same', use_bias=True, strides=strides,
+    x = Convolution2D(filters, kernel, padding='same', use_bias=False, strides=strides,
                       name='conv1')(input)
-    x = BatchNormalization(axis=channel_axis, scale=False, name='conv1_bn')(x)
-    x = Activation('relu', name='conv1_relu')(x)
+    x = BatchNormalization(axis=channel_axis, name='conv1_bn', momentum=0.9997)(x)
+    x = Activation(tf.nn.relu6, name='conv1_relu')(x)
 
     return x
 
 
-def __depthwise_conv_block(input, depthwise_conv_filters, pointwise_conv_filters,
-                           alpha, depth_multiplier=1, strides=(1, 1), id=1):
+def __depthwise_conv_block(input, pointwise_conv_filters, alpha,
+                           depth_multiplier=1, strides=(1, 1), id=1):
     channel_axis = 1 if K.image_data_format() == 'channels_first' else -1
-    depthwise_conv_filters = int(depthwise_conv_filters * alpha)
     pointwise_conv_filters = int(pointwise_conv_filters * alpha)
 
-    x = DepthwiseConvolution2D(depthwise_conv_filters, (3, 3), padding='same', depth_multiplier=depth_multiplier,
-                               strides=strides, use_bias=True, name='conv_dw_%d' % id)(input)
-    x = BatchNormalization(axis=channel_axis, scale=False, name='conv_dw_%d_bn' % id)(x)
-    x = Activation('relu', name='conv_dw_%d_relu' % id)(x)
+    x = DepthwiseConvolution2D(kernel_size=(3, 3), padding='same', depth_multiplier=depth_multiplier,
+                               strides=strides, use_bias=False, name='conv_dw_%d' % id)(input)
+    x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % id, momentum=0.9997)(x)
+    x = Activation(tf.nn.relu6, name='conv_dw_%d_relu' % id)(x)
 
-    x = Convolution2D(pointwise_conv_filters, (1, 1), padding='same', use_bias=True, strides=(1, 1),
+    x = Convolution2D(pointwise_conv_filters, (1, 1), padding='same', use_bias=False, strides=(1, 1),
                       name='conv_pw_%d' % id)(x)
-    x = BatchNormalization(axis=channel_axis, scale=False, name='conv_pw_%d_bn' % id)(x)
-    x = Activation('relu', name='conv_pw_%d_relu' % id)(x)
+    x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % id, momentum=0.9997)(x)
+    x = Activation(tf.nn.relu6, name='conv_pw_%d_relu' % id)(x)
 
     return x
 
@@ -172,33 +173,40 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
     '''
 
     x = __conv_block(img_input, 32, alpha, strides=(2, 2))
-    x = __depthwise_conv_block(x, 32, 64, alpha, depth_multiplier, id=1)
+    x = __depthwise_conv_block(x, 64, alpha, depth_multiplier, id=1)
 
-    x = __depthwise_conv_block(x, 64, 128, alpha, depth_multiplier, strides=(2, 2), id=2)
-    x = __depthwise_conv_block(x, 128, 128, alpha, depth_multiplier, id=3)
+    x = __depthwise_conv_block(x, 128, alpha, depth_multiplier, strides=(2, 2), id=2)
+    x = __depthwise_conv_block(x, 128, alpha, depth_multiplier, id=3)
 
-    x = __depthwise_conv_block(x, 128, 256, alpha, depth_multiplier, strides=(2, 2), id=4)
-    x = __depthwise_conv_block(x, 256, 256, alpha, depth_multiplier, id=5)
+    x = __depthwise_conv_block(x, 256, alpha, depth_multiplier, strides=(2, 2), id=4)
+    x = __depthwise_conv_block(x, 256, alpha, depth_multiplier, id=5)
 
-    x = __depthwise_conv_block(x, 256, 512, alpha, depth_multiplier, strides=(2, 2), id=6)
-    x = __depthwise_conv_block(x, 512, 512, alpha, depth_multiplier, id=7)
-    x = __depthwise_conv_block(x, 512, 512, alpha, depth_multiplier, id=8)
-    x = __depthwise_conv_block(x, 512, 512, alpha, depth_multiplier, id=9)
-    x = __depthwise_conv_block(x, 512, 512, alpha, depth_multiplier, id=10)
-    x = __depthwise_conv_block(x, 512, 512, alpha, depth_multiplier, id=11)
+    x = __depthwise_conv_block(x, 512, alpha, depth_multiplier, strides=(2, 2), id=6)
+    x = __depthwise_conv_block(x, 512, alpha, depth_multiplier, id=7)
+    x = __depthwise_conv_block(x, 512, alpha, depth_multiplier, id=8)
+    x = __depthwise_conv_block(x, 512, alpha, depth_multiplier, id=9)
+    x = __depthwise_conv_block(x, 512, alpha, depth_multiplier, id=10)
+    x = __depthwise_conv_block(x, 512, alpha, depth_multiplier, id=11)
 
-    x = __depthwise_conv_block(x, 512, 1024, alpha, depth_multiplier, strides=(2, 2), id=12)
-    x = __depthwise_conv_block(x, 1024, 1024, alpha, depth_multiplier, id=13)
+    x = __depthwise_conv_block(x, 1024, alpha, depth_multiplier, strides=(2, 2), id=12)
+    x = __depthwise_conv_block(x, 1024, alpha, depth_multiplier, id=13)
 
     x = GlobalAveragePooling2D()(x)
 
     if include_top:
+        if K.image_data_format() == 'channels_first':
+            shape = (1024 * alpha, 1, 1)
+        else:
+            shape = (1, 1, 1024 * alpha)
+
+        x = Reshape(shape)(x)
         x = Dropout(dropout)(x)
-        x = Dense(classes, activation='softmax')(x)
+        x = Convolution2D(classes, (1, 1), padding='same', name='conv_preds')(x)
+        x = Reshape((classes,))(x)
+        x = Activation('softmax')(x)
 
     return x
 
 if __name__ == "__main__":
-    model = MobileNets(alpha=1, depth_multiplier=1, weights='imagenet')
-
+    model = MobileNets(alpha=1, depth_multiplier=1, weights=None)
     model.summary()

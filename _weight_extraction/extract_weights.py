@@ -6,7 +6,7 @@ import numpy as np
 import os
 from tensorflow.python import pywrap_tensorflow
 
-checkpoint_file = 'checkpoint/model.ckpt-906808'
+checkpoint_file = 'checkpoint/mobilenet_v1_1.0_224.ckpt'
 
 fp = "weights/"
 
