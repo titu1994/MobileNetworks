@@ -192,15 +192,11 @@ class DepthwiseConv2D(Conv2D):
         self.built = True
 
     def call(self, inputs, training=None):
-        inputs = _preprocess_conv2d_input(inputs, self.data_format)
-
         outputs = tf.nn.depthwise_conv2d(inputs, self.depthwise_kernel,
                                          strides=self._strides,
                                          padding=self._padding,
                                          rate=self.dilation_rate,
                                          data_format=self._data_format)
-
-        outputs = _postprocess_conv2d_output(outputs, self.data_format)
 
         if self.bias:
             outputs = K.bias_add(
