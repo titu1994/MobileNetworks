@@ -15,12 +15,15 @@ def preprocess_input(x):
 
 
 if __name__ == '__main__':
-    model = MobileNets((224, 224, 3), weights=None)
-    model.load_weights('weights/mobilenet_imagenet_tf.h5')
+    size = 224
+    alpha = 1.0
+
+    model = MobileNets(input_shape=(size, size, 3), alpha=alpha, weights='imagenet')
+    #model.load_weights('weights/mobilenet_1_0_224_tf.h5')
     model.summary()
 
     img_path = 'elephant.jpg'
-    img = image.load_img(img_path, target_size=(224, 224))
+    img = image.load_img(img_path, target_size=(size, size))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
 

@@ -120,7 +120,7 @@ class DepthwiseConv2D(Conv2D):
                  kernel_size,
                  strides=(1, 1),
                  padding='valid',
-                 depth_multiplier=1.0,
+                 depth_multiplier=1,
                  data_format=None,
                  activation=None,
                  use_bias=True,
@@ -152,7 +152,7 @@ class DepthwiseConv2D(Conv2D):
 
         self._padding = _preprocess_padding(self.padding)
         self._strides = (1,) + self.strides + (1,)
-        self._data_format = "NHWC" if self.data_format == 'channels_last' else "NCHW"
+        self._data_format = "NHWC"
 
     def build(self, input_shape):
         if len(input_shape) < 4:
@@ -192,11 +192,15 @@ class DepthwiseConv2D(Conv2D):
         self.built = True
 
     def call(self, inputs, training=None):
+        inputs = _preprocess_conv2d_input(inputs, self.data_format)
+
         outputs = tf.nn.depthwise_conv2d(inputs, self.depthwise_kernel,
                                          strides=self._strides,
                                          padding=self._padding,
                                          rate=self.dilation_rate,
                                          data_format=self._data_format)
+
+        outputs = _postprocess_conv2d_output(outputs, self.data_format)
 
         if self.bias:
             outputs = K.bias_add(

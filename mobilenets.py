@@ -22,13 +22,45 @@ import tensorflow as tf
 
 from depthwise_conv import DepthwiseConvolution2D
 
-TH_WEIGHTS_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_th_dim_ordering_tf_kernels.h5'
-TF_WEIGHTS_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_tf_dim_ordering_tf_kernels.h5'
-TH_WEIGHTS_PATH_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_th_dim_ordering_tf_kernels_no_top.h5'
-TF_WEIGHTS_PATH_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_tf_dim_ordering_tf_kernels_no_top.h5'
+BASE_WEIGHT_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/'
 
+# MOBILENET_1_0_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_224_tf.h5'
+# MOBILENET_1_0_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_224_tf_no_top.h5'
+# MOBILENET_1_0_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_192_tf.h5'
+# MOBILENET_1_0_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_192_tf_no_top.h5'
+# MOBILENET_1_0_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_160_tf.h5'
+# MOBILENET_1_0_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_160_tf_no_top.h5'
+# MOBILENET_1_0_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_128_tf.h5'
+# MOBILENET_1_0_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_128_tf_no_top.h5'
+#
+# MOBILENET_7_5_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_224_tf.h5'
+# MOBILENET_7_5_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_224_tf_no_top.h5'
+# MOBILENET_7_5_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_192_tf.h5'
+# MOBILENET_7_5_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_192_tf_no_top.h5'
+# MOBILENET_7_5_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_160_tf.h5'
+# MOBILENET_7_5_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_160_tf_no_top.h5'
+# MOBILENET_7_5_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_128_tf.h5'
+# MOBILENET_7_5_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_128_tf_no_top.h5'
+#
+# MOBILENET_5_0_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_224_tf.h5'
+# MOBILENET_5_0_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_224_tf_no_top.h5'
+# MOBILENET_5_0_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_192_tf.h5'
+# MOBILENET_5_0_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_192_tf_no_top.h5'
+# MOBILENET_5_0_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_160_tf.h5'
+# MOBILENET_5_0_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_160_tf_no_top.h5'
+# MOBILENET_5_0_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_128_tf.h5'
+# MOBILENET_5_0_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_128_tf_no_top.h5'
+#
+# MOBILENET_2_5_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_192_tf.h5'
+# MOBILENET_2_5_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_224_tf_no_top.h5'
+# MOBILENET_2_5_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_192_tf.h5'
+# MOBILENET_2_5_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_192_tf_no_top.h5'
+# MOBILENET_2_5_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_160_tf.h5'
+# MOBILENET_2_5_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_160_tf_no_top.h5'
+# MOBILENET_2_5_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_128_tf.h5'
+# MOBILENET_2_5_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_128_tf_no_top.h5'
 
-def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
+def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
                dropout=1e-3, include_top=True, weights='imagenet',
                input_tensor=None, classes=1001):
     ''' Instantiate the MobileNet architecture.
@@ -70,6 +102,31 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
         raise ValueError('If using `weights` as ImageNet with `include_top`'
                          ' as true, `classes` should be 1001')
 
+    if weights == 'imagenet':
+        assert depth_multiplier == 1, "If imagenet weights are being loaded, depth multiplier must be 1"
+
+        assert alpha in [0.25, 0.50, 0.75, 1.0], "If imagenet weights are being loaded, alpha can be one of" \
+                                                 "`0.25`, `0.50`, `0.75` or `1.0` only."
+
+        if alpha == 1.0:
+            alpha_text = "1_0"
+        elif alpha == 0.75:
+            alpha_text = "7_5"
+        elif alpha == 0.50:
+            alpha_text = "5_0"
+        else:
+            alpha_text = "2_5"
+
+        rows, cols = (0, 1) if K.image_data_format() == 'channels_last' else (1, 2)
+
+        rows = int(input_shape[rows])
+        cols = int(input_shape[cols])
+
+        assert rows == cols and rows in [None, 128, 160, 192, 224], "If imagenet weights are being loaded," \
+                                                                    "image must be square and be one of " \
+                                                                    "(128,128), (160,160), (192,192), or (224, 224)." \
+                                                                    "Given (%d, %d)" % (rows, cols)
+
     # Determine proper input shape. Note, include_top is False by default, as
     # input shape can be anything larger than 32x32 and the same number of parameters
     # will be used.
@@ -104,34 +161,29 @@ def MobileNets(input_shape=None, alpha=1, depth_multiplier=1,
 
     # load weights
     if weights == 'imagenet':
-        if (alpha == 1) and (depth_multiplier == 1):
-            if K.backend() == 'theano':
-                raise AttributeError('Weights for Theano backend are not available, '
-                                     'as Theano does not support depthwise convolution yet.')
+        if K.backend() == 'theano':
+            raise AttributeError('Weights for Theano backend are not available, '
+                                 'as Theano does not support depthwise convolution yet.')
 
-            # Default parameters match. Weights for this model exist:
-            if K.image_data_format() == 'channels_first':
-                if include_top:
-                    weights_path = get_file('mobilenet_th_dim_ordering_tf_kernels.h5',
-                                            TH_WEIGHTS_PATH,
-                                            cache_subdir='models')
-                else:
-                    weights_path = get_file('mobilenet_th_dim_ordering_tf_kernels_no_top.h5',
-                                            TH_WEIGHTS_PATH_NO_TOP,
-                                            cache_subdir='models')
+        if K.image_data_format() == 'channels_first':
+            raise AttributeError('Weights for Channels Last format are not available')
 
-                model.load_weights(weights_path)
+        if (alpha == 1.) and (depth_multiplier == 1.):
+            if include_top:
+                model_name = "mobilenet_%s_%d_tf.h5" % (alpha_text, rows)
+                weigh_path = BASE_WEIGHT_PATH + model_name
+                weights_path = get_file(model_name,
+                                        weigh_path,
+                                        cache_subdir='models')
             else:
-                if include_top:
-                    weights_path = get_file('mobilenet_tf_dim_ordering_tf_kernels.h5',
-                                            TF_WEIGHTS_PATH,
-                                            cache_subdir='models')
-                else:
-                    weights_path = get_file('mobilenet_tf_dim_ordering_tf_kernels_no_top.h5',
-                                            TF_WEIGHTS_PATH_NO_TOP,
-                                            cache_subdir='models')
+                model_name = "mobilenet_%s_%d_tf_no_top.h5" % (alpha_text, rows)
+                weigh_path = BASE_WEIGHT_PATH + model_name
+                weights_path = get_file(model_name,
+                                        weigh_path,
+                                        cache_subdir='models')
 
-                model.load_weights(weights_path)
+            model.load_weights(weights_path)
+
     return model
 
 
@@ -205,26 +257,17 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
         else:
             shape = (1, 1, int(1024 * alpha))
 
-        x = Reshape(shape)(x)
-        x = Dropout(dropout)(x)
+        x = Reshape(shape, name='reshape_1')(x)
+        x = Dropout(dropout, name='dropout')(x)
         x = Convolution2D(classes, (1, 1), padding='same', name='conv_preds')(x)
-        x = Activation('softmax')(x)
-        x = Reshape((classes,))(x)
+        x = Activation('softmax', name='act_softmax')(x)
+        x = Reshape((classes,), name='reshape_2')(x)
 
     return x
 
 if __name__ == "__main__":
-    pass
-    import tensorflow as tf
-    with tf.Session() as sess:
-        K.set_session(sess)
 
-        model = MobileNets(input_shape=(224, 224, 3), alpha=1, depth_multiplier=1, weights=None)
-        model.summary()
-
-        graph = sess.graph
-
-        writer = tf.summary.FileWriter('logs/keras/', graph)
-        writer.close()
+    model = MobileNets(input_shape=(224, 224, 3), alpha=1, depth_multiplier=1, weights=None)
+    model.summary()
 
 

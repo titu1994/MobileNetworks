@@ -4,9 +4,10 @@ from __future__ import print_function
 
 import numpy as np
 import os
+import glob
 from tensorflow.python import pywrap_tensorflow
 
-checkpoint_file = 'checkpoint/mobilenet_v1_1.0_224.ckpt'
+checkpoint_file = 'checkpoint/mobilenet_v1_0.25_128.ckpt'
 
 fp = "weights/"
 
@@ -62,3 +63,13 @@ inspect checkpoint --file_name = {}"""
 
 
 print_tensors_in_checkpoint_file(checkpoint_file, None, True)
+
+os.remove('weights/global_step.npy')
+for fn in glob.glob('weights/*_ExponentialMovingAverage.npy'):
+  os.remove(fn)
+
+for fn in glob.glob('weights/*_RMSProp.npy'):
+  os.remove(fn)
+
+for fn in glob.glob('weights/*_RMSProp_1.npy'):
+  os.remove(fn)

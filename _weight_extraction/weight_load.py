@@ -4,6 +4,8 @@ import os
 
 from mobilenets import MobileNets
 
+model = MobileNets((128, 128, 3), alpha=0.25, weights=None)
+
 weight_path = 'weights/*.npy'
 
 fns = glob.glob(weight_path)
@@ -40,8 +42,6 @@ for i, dw in enumerate(dwlist):
 
 print("Final dense layer", fcn)
 print()
-
-model = MobileNets((224, 224, 3), weights=None)
 
 #for i, layer in enumerate(model.layers):
 #    print(i, layer.name)
@@ -93,7 +93,7 @@ print("Loaded final conv classifier weights")
 
 layer_weights_saved[-3] = True
 
-model.save_weights('mobilenet_imagenet_tf.h5', overwrite=True)
+model.save_weights('../weights/mobilenet_imagenet_tf.h5', overwrite=True)
 print("Model saved")
 
 # perform check that all weights that could have been loaded, Have been loaded!
@@ -104,3 +104,6 @@ for layer_id, has_weights in enumerate(layer_has_weights):
         print("Layer id %d (%s) weights were not saved!" % (layer_id, model.layers[layer_id].name))
 
 print("Sanity check complete!")
+
+for fn in glob.glob(weight_path):
+    os.remove(fn)
