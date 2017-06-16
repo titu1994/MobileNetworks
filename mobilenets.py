@@ -8,17 +8,16 @@ from __future__ import absolute_import
 from __future__ import division
 
 from keras.models import Model
-from keras.layers.core import Dense, Activation, Dropout, Reshape
+from keras.layers.core import Activation, Dropout, Reshape
+from keras.activations import relu
 from keras.layers.convolutional import Convolution2D
-from keras.layers.pooling import GlobalAveragePooling2D
+from keras.layers.pooling import GlobalAveragePooling2D, GlobalMaxPooling2D
 from keras.layers import Input
 from keras.layers.normalization import BatchNormalization
 from keras.utils.data_utils import get_file
 from keras.engine.topology import get_source_inputs
 from keras.applications.imagenet_utils import _obtain_input_shape
 import keras.backend as K
-
-import tensorflow as tf
 
 from depthwise_conv import DepthwiseConvolution2D
 
@@ -27,7 +26,7 @@ BASE_WEIGHT_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download
 
 def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
                dropout=1e-3, include_top=True, weights='imagenet',
-               input_tensor=None, classes=1001):
+               input_tensor=None, pooling=None, classes=1001):
     ''' Instantiate the MobileNet architecture.
         Note that only TensorFlow is supported for now,
         therefore it only works with the data format
@@ -51,6 +50,17 @@ def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
                 `imagenet` (ImageNet weights)
             input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
                 to use as image input for the model.
+            pooling: Optional pooling mode for feature extraction
+                when `include_top` is `False`.
+                - `None` means that the output of the model will be
+                    the 4D tensor output of the
+                    last convolutional layer.
+                - `avg` means that global average pooling
+                    will be applied to the output of the
+                    last convolutional layer, and thus
+                    the output of the model will be a 2D tensor.
+                - `max` means that global max pooling will
+                    be applied.
             classes: optional number of classes to classify images
                 into, only to be specified if `include_top` is True, and
                 if no `weights` argument is specified.
@@ -117,7 +127,7 @@ def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
         else:
             img_input = input_tensor
 
-    x = __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier, dropout)
+    x = __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier, dropout, pooling)
 
     # Ensure that the model takes into account
     # any potential predecessors of `input_tensor`.
@@ -159,7 +169,7 @@ def __conv_block(input, filters, alpha, kernel=(3, 3), strides=(1, 1)):
     x = Convolution2D(filters, kernel, padding='same', use_bias=False, strides=strides,
                       name='conv1')(input)
     x = BatchNormalization(axis=channel_axis, name='conv1_bn')(x)
-    x = Activation(tf.nn.relu6, name='conv1_relu')(x)
+    x = Activation(lambda x: relu(x, max_value=6), name='conv1_relu')(x)
 
     return x
 
@@ -172,17 +182,17 @@ def __depthwise_conv_block(input, pointwise_conv_filters, alpha,
     x = DepthwiseConvolution2D(kernel_size=(3, 3), padding='same', depth_multiplier=depth_multiplier,
                                strides=strides, use_bias=False, name='conv_dw_%d' % id)(input)
     x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % id)(x)
-    x = Activation(tf.nn.relu6, name='conv_dw_%d_relu' % id)(x)
+    x = Activation(lambda x: relu(x, max_value=6), name='conv_dw_%d_relu' % id)(x)
 
     x = Convolution2D(pointwise_conv_filters, (1, 1), padding='same', use_bias=False, strides=(1, 1),
                       name='conv_pw_%d' % id)(x)
     x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % id)(x)
-    x = Activation(tf.nn.relu6, name='conv_pw_%d_relu' % id)(x)
+    x = Activation(lambda x: relu(x, max_value=6), name='conv_pw_%d_relu' % id)(x)
 
     return x
 
 
-def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier, dropout):
+def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier, dropout, pooling):
     ''' Creates a MobileNet model with specified parameters
     Args:
         classes: Number of output classes
@@ -192,6 +202,17 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
         depth_multiplier: depth multiplier for depthwise convolution
                           (also called the resolution multiplier)
         dropout: dropout rate
+        pooling: Optional pooling mode for feature extraction
+            when `include_top` is `False`.
+            - `None` means that the output of the model will be
+                the 4D tensor output of the
+                last convolutional layer.
+            - `avg` means that global average pooling
+                will be applied to the output of the
+                last convolutional layer, and thus
+                the output of the model will be a 2D tensor.
+            - `max` means that global max pooling will
+                be applied.
     Returns: a Keras Model
     '''
 
@@ -214,25 +235,26 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
     x = __depthwise_conv_block(x, 1024, alpha, depth_multiplier, strides=(2, 2), id=12)
     x = __depthwise_conv_block(x, 1024, alpha, depth_multiplier, id=13)
 
-    x = GlobalAveragePooling2D()(x)
-
     if include_top:
         if K.image_data_format() == 'channels_first':
             shape = (int(1024 * alpha), 1, 1)
         else:
             shape = (1, 1, int(1024 * alpha))
 
+        x = GlobalAveragePooling2D()(x)
         x = Reshape(shape, name='reshape_1')(x)
         x = Dropout(dropout, name='dropout')(x)
         x = Convolution2D(classes, (1, 1), padding='same', name='conv_preds')(x)
         x = Activation('softmax', name='act_softmax')(x)
         x = Reshape((classes,), name='reshape_2')(x)
-
+    else:
+        if pooling == 'avg':
+            x = GlobalAveragePooling2D()(x)
+        elif pooling == 'max':
+            x = GlobalMaxPooling2D()(x)
     return x
 
 if __name__ == "__main__":
 
-    model = MobileNets(input_shape=(224, 224, 3), alpha=1, depth_multiplier=1, weights=None)
+    model = MobileNets(input_shape=(224, 224, 3), alpha=1, depth_multiplier=1)
     model.summary()
-
-

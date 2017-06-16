@@ -237,6 +237,7 @@ class DepthwiseConv2D(Conv2D):
 
     def get_config(self):
         config = super(DepthwiseConv2D, self).get_config()
+        config.pop('filters')
         config.pop('kernel_initializer')
         config.pop('kernel_regularizer')
         config.pop('kernel_constraint')
