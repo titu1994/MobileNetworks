@@ -24,41 +24,6 @@ from depthwise_conv import DepthwiseConvolution2D
 
 BASE_WEIGHT_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/'
 
-# MOBILENET_1_0_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_224_tf.h5'
-# MOBILENET_1_0_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_224_tf_no_top.h5'
-# MOBILENET_1_0_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_192_tf.h5'
-# MOBILENET_1_0_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_192_tf_no_top.h5'
-# MOBILENET_1_0_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_160_tf.h5'
-# MOBILENET_1_0_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_160_tf_no_top.h5'
-# MOBILENET_1_0_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_128_tf.h5'
-# MOBILENET_1_0_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_1_0_128_tf_no_top.h5'
-#
-# MOBILENET_7_5_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_224_tf.h5'
-# MOBILENET_7_5_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_224_tf_no_top.h5'
-# MOBILENET_7_5_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_192_tf.h5'
-# MOBILENET_7_5_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_192_tf_no_top.h5'
-# MOBILENET_7_5_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_160_tf.h5'
-# MOBILENET_7_5_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_160_tf_no_top.h5'
-# MOBILENET_7_5_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_128_tf.h5'
-# MOBILENET_7_5_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_7_5_128_tf_no_top.h5'
-#
-# MOBILENET_5_0_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_224_tf.h5'
-# MOBILENET_5_0_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_224_tf_no_top.h5'
-# MOBILENET_5_0_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_192_tf.h5'
-# MOBILENET_5_0_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_192_tf_no_top.h5'
-# MOBILENET_5_0_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_160_tf.h5'
-# MOBILENET_5_0_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_160_tf_no_top.h5'
-# MOBILENET_5_0_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_128_tf.h5'
-# MOBILENET_5_0_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_5_0_128_tf_no_top.h5'
-#
-# MOBILENET_2_5_224 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_192_tf.h5'
-# MOBILENET_2_5_224_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_224_tf_no_top.h5'
-# MOBILENET_2_5_192 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_192_tf.h5'
-# MOBILENET_2_5_192_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_192_tf_no_top.h5'
-# MOBILENET_2_5_160 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_160_tf.h5'
-# MOBILENET_2_5_160_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_160_tf_no_top.h5'
-# MOBILENET_2_5_128 = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_128_tf.h5'
-# MOBILENET_2_5_128_NO_TOP = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/mobilenet_2_5_128_tf_no_top.h5'
 
 def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
                dropout=1e-3, include_top=True, weights='imagenet',
