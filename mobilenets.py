@@ -58,6 +58,10 @@ def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
             A Keras model instance.
         '''
 
+    if K.backend() == 'theano':
+        raise AttributeError('Theano backend is not currently supported, '
+                             'as Theano does not support depthwise convolution yet.')
+
     if weights not in {'imagenet', None}:
         raise ValueError('The `weights` argument should be either '
                          '`None` (random initialization) or `imagenet` '
@@ -126,10 +130,6 @@ def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
 
     # load weights
     if weights == 'imagenet':
-        if K.backend() == 'theano':
-            raise AttributeError('Weights for Theano backend are not available, '
-                                 'as Theano does not support depthwise convolution yet.')
-
         if K.image_data_format() == 'channels_first':
             raise AttributeError('Weights for Channels Last format are not available')
 
