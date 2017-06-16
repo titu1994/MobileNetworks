@@ -1,5 +1,10 @@
 import h5py
-import numpy as np
+
+'''
+Place all the weight files here (should automatically be placed after running weight_load.py
+for all the checkpoints, and then simply run this script to change the weights to support 1000 
+classes instead of 1001.
+'''
 
 base = "mobilenet_"
 alphas = ["1_0", "7_5", "5_0", "2_5"]

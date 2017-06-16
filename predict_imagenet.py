@@ -19,7 +19,6 @@ if __name__ == '__main__':
     alpha = 1.0
 
     model = MobileNets(input_shape=(size, size, 3), alpha=alpha, weights='imagenet')
-    #model.load_weights('weights/mobilenet_1_0_224_tf.h5')
     model.summary()
 
     img_path = 'elephant.jpg'
