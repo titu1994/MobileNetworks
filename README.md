@@ -2,8 +2,6 @@
 
 Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf).
 
-Includes weights trained on ImageNet (obtained from https://github.com/Zehaos/MobileNet, and then converted) in the default model, and a custom layer which performs DepthwiseConvolution2D.
-
 # Benefits of Mobile Nets
 As explained in the paper, large neural networks can be exorbitant, both in the amount of memory they require to perform predictions, to the actual size of the model weights.
 
@@ -51,6 +49,6 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 </table>
 
 ## Conversion of Tensorflow Weights
-The weights were originally from https://github.com/Zehaos/MobileNet, which used Tensorflow checkpoints. 
+The weights were originally from https://github.com/tensorflow/models/blob/master/slim/nets/mobilenet_v1.md, which used Tensorflow checkpoints. 
 
-The `_weight_extraction` folder contains instructions on converting a tensorflow checkpoint weights into Numpy arrays, and then load them into Keras weight matrices.
+There are scripts and some documentation for how the weights were converted in the `_weight_extraction` folder.
