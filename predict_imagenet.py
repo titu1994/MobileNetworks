@@ -30,9 +30,5 @@ if __name__ == '__main__':
 
     preds = model.predict(x)
 
-    # decode predictions does not like the 1001th class (UNKNOWN class),
-    # thats why we remove the last prediction and feed it to decode predictions
-    preds = preds[:, 0:1000]
-
     print('Predicted:', decode_predictions(preds))
 
