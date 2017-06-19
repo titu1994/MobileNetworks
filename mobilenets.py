@@ -256,5 +256,5 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
 
 if __name__ == "__main__":
 
-    model = MobileNets(input_shape=(224, 224, 3), alpha=1, depth_multiplier=1)
+    model = MobileNets(input_shape=(224, 224, 3), alpha=1, weights=None)
     model.summary()
