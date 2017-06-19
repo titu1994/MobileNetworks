@@ -39,11 +39,11 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 <img src="https://github.com/titu1994/MobileNetworks/blob/master/elephant.jpg?raw=true" width=100% height=100%>
 </td>
 <td>
-('African_elephant', 0.96345246), <br>
-('lesser_panda', 0.018536508), <br>
-('echidna', 0.018011011), <br>
-('bison', 3.4793988e-08), <br>
-('llama', 3.1314428e-08)
+('Indian_elephant', 0.97889256), <br>
+('African_elephant', 0.014472792), <br>
+('tusker', 0.0066345367), <br>
+('warthog', 9.1309346e-08), <br>
+('ram', 1.1704416e-08)
 </td>
 </tr>
 </table>
