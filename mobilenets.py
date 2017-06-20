@@ -138,6 +138,8 @@ def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
     # Create model.
     model = Model(inputs, x, name='mobilenet')
 
+    model.summary()
+
     # load weights
     if weights == 'imagenet':
         if K.image_data_format() == 'channels_first':
@@ -256,5 +258,5 @@ def __create_mobilenet(classes, img_input, include_top, alpha, depth_multiplier,
 
 if __name__ == "__main__":
 
-    model = MobileNets(input_shape=(224, 224, 3), alpha=1, weights=None)
+    model = MobileNets(input_shape=(224, 224, 3), alpha=1)
     model.summary()
