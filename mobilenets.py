@@ -16,7 +16,7 @@ from keras.layers import Input
 from keras.layers.normalization import BatchNormalization
 from keras.utils.data_utils import get_file
 from keras.engine.topology import get_source_inputs
-from keras.applications.imagenet_utils import _obtain_input_shape
+from keras.applications.imagenet_utils import _obtain_input_shape, decode_predictions, preprocess_input
 import keras.backend as K
 import keras.activations
 
