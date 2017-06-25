@@ -18,8 +18,17 @@ from keras.utils.data_utils import get_file
 from keras.engine.topology import get_source_inputs
 from keras.applications.imagenet_utils import _obtain_input_shape
 import keras.backend as K
+import keras.activations
 
 from depthwise_conv import DepthwiseConvolution2D
+
+
+def relu6(x):
+    return K.relu(x, max_value=6)
+
+
+keras.activations.relu6 = relu6
+
 
 BASE_WEIGHT_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/'
 
@@ -138,8 +147,6 @@ def MobileNets(input_shape=None, alpha=1.0, depth_multiplier=1,
     # Create model.
     model = Model(inputs, x, name='mobilenet')
 
-    model.summary()
-
     # load weights
     if weights == 'imagenet':
         if K.image_data_format() == 'channels_first':
@@ -171,7 +178,7 @@ def __conv_block(input, filters, alpha, kernel=(3, 3), strides=(1, 1)):
     x = Convolution2D(filters, kernel, padding='same', use_bias=False, strides=strides,
                       name='conv1')(input)
     x = BatchNormalization(axis=channel_axis, name='conv1_bn')(x)
-    x = Activation(lambda x: relu(x, max_value=6), name='conv1_relu')(x)
+    x = Activation('relu6', name='conv1_relu')(x)
 
     return x
 
@@ -184,12 +191,12 @@ def __depthwise_conv_block(input, pointwise_conv_filters, alpha,
     x = DepthwiseConvolution2D(kernel_size=(3, 3), padding='same', depth_multiplier=depth_multiplier,
                                strides=strides, use_bias=False, name='conv_dw_%d' % id)(input)
     x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % id)(x)
-    x = Activation(lambda x: relu(x, max_value=6), name='conv_dw_%d_relu' % id)(x)
+    x = Activation('relu6', name='conv_dw_%d_relu' % id)(x)
 
     x = Convolution2D(pointwise_conv_filters, (1, 1), padding='same', use_bias=False, strides=(1, 1),
                       name='conv_pw_%d' % id)(x)
     x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % id)(x)
-    x = Activation(lambda x: relu(x, max_value=6), name='conv_pw_%d_relu' % id)(x)
+    x = Activation('relu6', name='conv_pw_%d_relu' % id)(x)
 
     return x
 
