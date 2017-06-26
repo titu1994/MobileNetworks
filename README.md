@@ -29,7 +29,7 @@ model = MobileNets(alpha=1, depth_multiplier=1)
 
 # Testing 
 
-The model can be tested by running the `predict_imagenet.py` script, using the given elephant image. It will return a top 5 prediction score, where "African Elephant" score will be around 96%.
+The model can be tested by running the `predict_imagenet.py` script, using the given elephant image. It will return a top 5 prediction score, where "African Elephant" score will be around 97.9%.
 
 <table>
 <tr align='center'>
