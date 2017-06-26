@@ -2,6 +2,8 @@
 
 Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf).
 
+![mobilenets](https://github.com/titu1994/MobileNetworks/blob/master/image/mobilenets.PNG?raw=true)
+
 # Benefits of Mobile Nets
 As explained in the paper, large neural networks can be exorbitant, both in the amount of memory they require to perform predictions, to the actual size of the model weights.
 
