@@ -14,7 +14,7 @@ if __name__ == '__main__':
     model = MobileNet(alpha=alpha, weights='imagenet')
     model.summary()
 
-    img_path = 'images/cheetah.jpg'
+    img_path = 'images/elephant.jpg'
     img = image.load_img(img_path, target_size=(size, size))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
