@@ -50,7 +50,7 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 </tr>
 <tr align='left'>
 <td>
-<img src="https://github.com/titu1994/MobileNetworks/blob/master/images/cheetah.jpg?raw=true" width=100% height=100%>
+<img src="https://github.com/titu1994/MobileNetworks/blob/master/images/cheetah.jpg?raw=true" width=100% height=50%>
 </td>
 <td>
 ('cheetah', 0.99743026), <br>
