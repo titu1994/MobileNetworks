@@ -1,8 +1,10 @@
 import numpy as np
 import tensorflow as tf
+
 from keras.preprocessing import image as image_utils
-import _weight_extraction.mobilenet_v1 as mobilenet_v1
 from keras.applications.imagenet_utils import decode_predictions
+
+import _weight_extraction.mobilenet_v1 as mobilenet_v1
 
 slim = tf.contrib.slim
 checkpoint_file = 'checkpoint/mobilenet_v1_1.0_224.ckpt'
@@ -16,7 +18,7 @@ def preprocess_input(x):
 
 
 with tf.Graph().as_default():
-    img_path = '../elephant.jpg'
+    img_path = '../images/elephant.jpg'
 
     img = image_utils.load_img(img_path, target_size=(224, 224))
     x = image_utils.img_to_array(img)
@@ -37,7 +39,7 @@ with tf.Graph().as_default():
     with tf.Session() as sess:
         init_fn(sess)
         np_image, probabilities = sess.run([x, probabilities])
-        probabilities = probabilities[:, 0:1000]
+        probabilities = probabilities[:, 1:]
         sorted_inds = [i[0] for i in sorted(enumerate(-probabilities), key=lambda x: x[1])]
 
     print("End Points : ")
