@@ -2,7 +2,7 @@
 
 Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf).
 
-![mobilenets](https://github.com/titu1994/MobileNetworks/blob/master/image/mobilenets.PNG?raw=true)
+![mobilenets](https://github.com/titu1994/MobileNetworks/blob/master/images/mobilenets.PNG?raw=true)
 
 # Benefits of Mobile Nets
 As explained in the paper, large neural networks can be exorbitant, both in the amount of memory they require to perform predictions, to the actual size of the model weights.
@@ -38,7 +38,7 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 </tr>
 <tr align='left'>
 <td>
-<img src="https://github.com/titu1994/MobileNetworks/blob/master/elephant.jpg?raw=true" width=100% height=100%>
+<img src="https://github.com/titu1994/MobileNetworks/blob/master/images/elephant.jpg?raw=true" width=100% height=100%>
 </td>
 <td>
 ('Indian_elephant', 0.97889256), <br>
@@ -46,6 +46,18 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 ('tusker', 0.0066345367), <br>
 ('warthog', 9.1309346e-08), <br>
 ('ram', 1.1704416e-08)
+</td>
+</tr>
+<tr align='left'>
+<td>
+<img src="https://github.com/titu1994/MobileNetworks/blob/master/images/cheetah.jpg?raw=true" width=100% height=100%>
+</td>
+<td>
+('cheetah', 0.99743026), <br>
+('leopard', 0.0010753422), <br>
+('lion', 0.00069186132), <br>
+('snow_leopard', 0.00059767498), <br>
+('lynx', 0.00012871811)
 </td>
 </tr>
 </table>
