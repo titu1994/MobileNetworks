@@ -69,6 +69,7 @@ from keras.applications.inception_v3 import preprocess_input
 from keras.applications.imagenet_utils import decode_predictions
 from keras import backend as K
 
+import tensorflow as tf
 
 BASE_WEIGHT_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/'
 
@@ -179,6 +180,18 @@ class DepthwiseConv2D(Conv2D):
         self.depthwise_constraint = constraints.get(depthwise_constraint)
         self.bias_initializer = initializers.get(bias_initializer)
 
+        self._padding = padding.upper()
+
+        if K.image_data_format() == 'channels_last':
+            self._strides = (1,) + strides + (1,)
+        else:
+            self._strides = (1, 1,) + strides
+
+        if self.data_format == 'channels_last':
+            self._data_format = "NHWC"
+        else:
+            self._data_format = "NCHW"
+
     def build(self, input_shape):
         if len(input_shape) < 4:
             raise ValueError('Inputs to `DepthwiseConv2D` should have rank 4. '
@@ -217,13 +230,12 @@ class DepthwiseConv2D(Conv2D):
         self.built = True
 
     def call(self, inputs, training=None):
-        outputs = K.depthwise_conv2d(
+        outputs = tf.nn.depthwise_conv2d(
             inputs,
             self.depthwise_kernel,
-            strides=self.strides,
-            padding=self.padding,
-            dilation_rate=self.dilation_rate,
-            data_format=self.data_format)
+            strides=self._strides,
+            padding=self._padding,
+            data_format=self._data_format)
 
         if self.bias:
             outputs = K.bias_add(
