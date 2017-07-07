@@ -7,7 +7,7 @@ import os
 import glob
 from tensorflow.python import pywrap_tensorflow
 
-checkpoint_file = 'checkpoint/mobilenet_v1_0.25_128.ckpt'
+checkpoint_file = 'checkpoint/mobilenet_v1_1.0_224.ckpt'
 
 fp = "weights/"
 

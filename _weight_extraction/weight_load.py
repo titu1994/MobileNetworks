@@ -2,9 +2,9 @@ import numpy as np
 import glob
 import os
 
-from mobilenets import MobileNets
+from mobilenets import MobileNet
 
-model = MobileNets((128, 128, 3), alpha=0.25, weights=None)
+model = MobileNet((224, 224, 3), alpha=1.0, weights=None)
 
 weight_path = 'weights/*.npy'
 
@@ -88,6 +88,8 @@ for i, dw in enumerate(dwlist):
     layer_index += 6
 
 fc_weights_bias = [np.load(fcn[1]), np.load(fcn[0])]
+fc_weights_bias[0] = fc_weights_bias[0][..., 1:]
+fc_weights_bias[1] = fc_weights_bias[1][1:]
 model.layers[-3].set_weights(fc_weights_bias)
 print("Loaded final conv classifier weights")
 
