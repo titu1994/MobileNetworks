@@ -3,6 +3,8 @@ from __future__ import absolute_import
 
 from keras.preprocessing import image
 
+#from keras.applications.mobilenet import MobileNet, preprocess_input, decode_predictions
+
 from mobilenets import MobileNet, preprocess_input, decode_predictions
 
 import numpy as np
@@ -11,7 +13,7 @@ if __name__ == '__main__':
     size = 224
     alpha = 1.0
 
-    model = MobileNet(alpha=alpha, weights='imagenet')
+    model = MobileNet(input_shape=(size, size, 3), alpha=alpha, weights='imagenet')
     model.summary()
 
     img_path = 'images/elephant.jpg'
