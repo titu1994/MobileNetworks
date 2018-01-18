@@ -2,6 +2,8 @@
 
 Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf).
 
+-[ ] Begin implementation of MobileNet V2 from [Inverted Residuals and Linear Bottlenecks: Mobile Networks for Classification, Detection and Segmentation](https://arxiv.org/abs/1801.04381v2)
+
 ![mobilenets](https://github.com/titu1994/MobileNetworks/blob/master/images/mobilenets.PNG?raw=true)
 
 # Benefits of Mobile Nets
