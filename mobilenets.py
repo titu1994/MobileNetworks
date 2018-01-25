@@ -706,7 +706,7 @@ def MobileNetV2(input_shape=None,
 
     x = _depthwise_conv_block_v2(x, 320, alpha, expansion_factor, depth_multiplier, block_id=17)
 
-    if alpha < 1.0:
+    if alpha <= 1.0:
         penultimate_filters = 1280
     else:
         penultimate_filters = int(1280 * alpha)
@@ -968,7 +968,17 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
                name='conv_pw2_%d' % block_id)(x)
     x = BatchNormalization(axis=channel_axis, name='conv_pw2_%d_bn' % block_id)(x)
 
-    if strides == (1, 1) and input_shape[channel_axis] == pointwise_conv_filters:
+    if strides == (2, 2):
+        return x
+    else:
+        if input_shape[channel_axis] != pointwise_conv_filters:
+            inputs = Conv2D(pointwise_conv_filters, (1, 1),
+                            padding='same',
+                            use_bias=False,
+                            strides=(1, 1),
+                            name='conv_projection_%d' % (block_id))(inputs)
+            inputs = BatchNormalization(axis=channel_axis, name='conv_projection_%d_bn' % block_id)(inputs)
+
         x = add([inputs, x])
 
     return x
