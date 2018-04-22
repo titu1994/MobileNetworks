@@ -1,1 +1,1 @@
-Add the 3 checkpoint files from https://github.com/Zehaos/MobileNet here!
+Add the checkpoint files from https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet here!

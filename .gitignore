@@ -1,5 +1,5 @@
-_weight_extraction/checkpoint/*.ckpt
+_weight_extraction/checkpoint/*
 _weight_extraction/weights/*.npy
-_weight_extraction_v2/checkpoint/*.ckpt
+_weight_extraction_v2/checkpoint/*
 _weight_extraction_v2/weights/*.npy
 
