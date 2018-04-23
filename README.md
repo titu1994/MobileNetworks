@@ -1,8 +1,8 @@
 # Mobile Networks in Keras
 
-Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf).
+Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf) + ported weights.
 
--[ ] Begin implementation of MobileNet V2 from [Inverted Residuals and Linear Bottlenecks: Mobile Networks for Classification, Detection and Segmentation](https://arxiv.org/abs/1801.04381v2)
+Contains the Keras implementation of the paper [MobileNetV2: Inverted Residuals and Linear Bottlenecks](https://arxiv.org/abs/1801.04381) + ported weights.
 
 ![mobilenets](https://github.com/titu1994/MobileNetworks/blob/master/images/mobilenets.PNG?raw=true)
 
@@ -15,18 +15,34 @@ Therefore, by using Depthwise Convolutions, we can reduce a significant portion 
 
 The default MobileNet corresponds to the model pre-trained on ImageNet. It has an input shape of (224, 224, 3).
 
-```
-from mobilenets import MobileNets
+You can now create either the original version of MobileNet or the MobileNetV2 recently released using the appropriate method.
 
-model = MobileNets()
+```
+from mobilenets import MobileNet, MobileNetV2 
+
+# for V1
+model = MobileNet()
+
+# for V2
+model = MobileNetV2()
 ```
 
+## MobileNet V1
 There are two hyperparameters that you can change - `alpha` (the widening factor), and `depth_multiplier`. The ImageNet model uses the default values of 1 for both of the above.
 
 ```
-from mobilenets import MobileNets
+from mobilenets import MobileNet
 
-model = MobileNets(alpha=1, depth_multiplier=1)
+model = MobileNet(alpha=1, depth_multiplier=1)
+```
+
+## MobileNet V2
+There are three hyperparameters that you can change - `alpha` (the widening factor), `expansion_factor` (multiplier by which the inverted residual block is multiplied) and `depth_multiplier`. The ImageNet model uses the default values of 1 for `alpha` and `depth_multiplied` and a default of 6 for `expansion_factor`.
+
+```
+from mobilenets import MobileNetV2
+
+model = MobileNetV2(alpha=1, expansion_factor=6, depth_multiplier=1)
 ```
 
 # Testing 
@@ -65,6 +81,7 @@ The model can be tested by running the `predict_imagenet.py` script, using the g
 </table>
 
 ## Conversion of Tensorflow Weights
-The weights were originally from https://github.com/tensorflow/models/blob/master/slim/nets/mobilenet_v1.md, which used Tensorflow checkpoints. 
+The weights were originally from https://github.com/tensorflow/models/blob/master/slim/nets/mobilenet_v1.md, which used Tensorflow checkpoints. There are scripts and some documentation for how the weights were converted in the `_weight_extraction` folder.
 
-There are scripts and some documentation for how the weights were converted in the `_weight_extraction` folder.
+The weights for V2 model were originally from https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet, which used Tensorflow checkpoints. There are scripts and some documentation for how the weights were converted in the `_weight_extraction_v2` folder.
+
