@@ -47,6 +47,7 @@ from __future__ import absolute_import
 from __future__ import division
 
 import warnings
+import math
 
 from keras.models import Model
 from keras.layers import Input
@@ -73,6 +74,7 @@ from keras import backend as K
 import tensorflow as tf
 
 BASE_WEIGHT_PATH = 'https://github.com/titu1994/MobileNetworks/releases/download/v1.0/'
+BASE_WEIGHT_PATH_V2 = 'https://github.com/titu1994/MobileNetworks/releases/download/v2.0/'
 
 
 def relu6(x):
@@ -621,7 +623,7 @@ def MobileNetV2(input_shape=None,
             rows = input_shape[0]
             cols = input_shape[1]
 
-        if rows == cols and rows in [128, 160, 192, 224]:
+        if rows == cols and rows in [96, 128, 160, 192, 224]:
             default_size = rows
         else:
             default_size = 224
@@ -638,21 +640,21 @@ def MobileNetV2(input_shape=None,
     rows = input_shape[row_axis]
     cols = input_shape[col_axis]
 
-    # if weights == 'imagenet':
-    #     if depth_multiplier != 1:
-    #         raise ValueError('If imagenet weights are being loaded, '
-    #                          'depth multiplier must be 1')
-    #
-    #     if alpha not in [0.25, 0.50, 0.75, 1.0, 1.4]:
-    #         raise ValueError('If imagenet weights are being loaded, '
-    #                          'alpha can be one of'
-    #                          '`0.25`, `0.50`, `0.75` or `1.0` only.')
-    #
-    #     if rows != cols or rows not in [128, 160, 192, 224]:
-    #         raise ValueError('If imagenet weights are being loaded, '
-    #                          'input must have a static square shape (one of '
-    #                          '(128,128), (160,160), (192,192), or (224, 224)).'
-    #                          ' Input shape provided = %s' % (input_shape,))
+    if weights == 'imagenet':
+        if depth_multiplier != 1:
+            raise ValueError('If imagenet weights are being loaded, '
+                             'depth multiplier must be 1')
+
+        if alpha not in [0.35, 0.50, 0.75, 1.0, 1.3, 1.4]:
+            raise ValueError('If imagenet weights are being loaded, '
+                             'alpha can be one of'
+                             '`0.35`, `0.50`, `0.75`, `1.0`, `1.3` and `1.4` only.')
+
+        if rows != cols or rows not in [96, 128, 160, 192, 224]:
+            raise ValueError('If imagenet weights are being loaded, '
+                             'input must have a static square shape (one of '
+                             '(06, 96), (128,128), (160,160), (192,192), or '
+                             '(224, 224)).Input shape provided = %s' % (input_shape,))
 
     if K.image_data_format() != 'channels_last':
         warnings.warn('The MobileNet family of models is only available '
@@ -743,36 +745,52 @@ def MobileNetV2(input_shape=None,
     model = Model(inputs, x, name='mobilenetV2_%0.2f_%s' % (alpha, rows))
 
     # load weights
-    # if weights == 'imagenet':
-    #     if K.image_data_format() == 'channels_first':
-    #         raise ValueError('Weights for "channels_last" format '
-    #                          'are not available.')
-    #     if alpha == 1.0:
-    #         alpha_text = '1_0'
-    #     elif alpha == 0.75:
-    #         alpha_text = '7_5'
-    #     elif alpha == 0.50:
-    #         alpha_text = '5_0'
-    #     else:
-    #         alpha_text = '2_5'
-    #
-    #     if include_top:
-    #         model_name = 'mobilenet_%s_%d_tf.h5' % (alpha_text, rows)
-    #         weigh_path = BASE_WEIGHT_PATH + model_name
-    #         weights_path = get_file(model_name,
-    #                                 weigh_path,
-    #                                 cache_subdir='models')
-    #     else:
-    #         model_name = 'mobilenet_%s_%d_tf_no_top.h5' % (alpha_text, rows)
-    #         weigh_path = BASE_WEIGHT_PATH + model_name
-    #         weights_path = get_file(model_name,
-    #                                 weigh_path,
-    #                                 cache_subdir='models')
-    #     model.load_weights(weights_path)
+    if weights == 'imagenet':
+        if K.image_data_format() == 'channels_first':
+            raise ValueError('Weights for "channels_last" format '
+                             'are not available.')
+        if alpha == 1.0:
+            alpha_text = '1_0'
+        elif alpha == 1.3:
+            alpha_text = '1_3'
+        elif alpha == 1.4:
+            alpha_text = '1_4'
+        elif alpha == 0.75:
+            alpha_text = '7_5'
+        elif alpha == 0.50:
+            alpha_text = '5_0'
+        else:
+            alpha_text = '3_5'
+
+        if include_top:
+            model_name = 'mobilenet_%s_%d_tf.h5' % (alpha_text, rows)
+            weigh_path = BASE_WEIGHT_PATH_V2 + model_name
+            weights_path = get_file(model_name,
+                                    weigh_path,
+                                    cache_subdir='models')
+        else:
+            model_name = 'mobilenet_%s_%d_tf_no_top.h5' % (alpha_text, rows)
+            weigh_path = BASE_WEIGHT_PATH_V2 + model_name
+            weights_path = get_file(model_name,
+                                    weigh_path,
+                                    cache_subdir='models')
+        model.load_weights(weights_path)
 
     if old_data_format:
         K.set_image_data_format(old_data_format)
     return model
+
+
+# taken from https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/conv_blocks.py
+def _make_divisible(v, divisor=8, min_value=8):
+    if min_value is None:
+        min_value = divisor
+
+    new_v = max(min_value, int(v + divisor / 2) // divisor * divisor)
+    # Make sure that round down does not go down by more than 10%.
+    if new_v < 0.9 * v:
+        new_v += divisor
+    return new_v
 
 
 def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), block_id=1):
@@ -818,7 +836,8 @@ def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), block_id=
         Output tensor of block.
     """
     channel_axis = 1 if K.image_data_format() == 'channels_first' else -1
-    filters = int(filters * alpha)
+    filters = filters * alpha
+    filters = _make_divisible(filters)
     x = Conv2D(filters, kernel,
                padding='same',
                use_bias=False,
@@ -873,7 +892,7 @@ def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
         Output tensor of block.
     """
     channel_axis = 1 if K.image_data_format() == 'channels_first' else -1
-    pointwise_conv_filters = int(pointwise_conv_filters * alpha)
+    pointwise_conv_filters = _make_divisible(pointwise_conv_filters * alpha)
 
     x = DepthwiseConv2D((3, 3),
                         padding='same',
@@ -941,16 +960,19 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
     """
     channel_axis = 1 if K.image_data_format() == 'channels_first' else -1
     input_shape = K.int_shape(inputs)
-    depthwise_conv_filters = int(input_shape[channel_axis] * expansion_factor)
-    pointwise_conv_filters = int(pointwise_conv_filters * alpha)
+    depthwise_conv_filters = _make_divisible(input_shape[channel_axis] * expansion_factor)
+    pointwise_conv_filters = _make_divisible(pointwise_conv_filters * alpha)
 
-    x = Conv2D(depthwise_conv_filters, (1, 1),
-               padding='same',
-               use_bias=False,
-               strides=(1, 1),
-               name='conv_pw1_%d' % block_id)(inputs)
-    x = BatchNormalization(axis=channel_axis, name='conv_pw1_%d_bn' % block_id)(x)
-    x = Activation(relu6, name='conv_pw1_%d_relu' % block_id)(x)
+    if depthwise_conv_filters > input_shape[channel_axis]:
+        x = Conv2D(depthwise_conv_filters, (1, 1),
+                   padding='same',
+                   use_bias=False,
+                   strides=(1, 1),
+                   name='conv_expand_%d' % block_id)(inputs)
+        x = BatchNormalization(axis=channel_axis, name='conv_expand_%d_bn' % block_id)(x)
+        x = Activation(relu6, name='conv_expand_%d_relu' % block_id)(x)
+    else:
+        x = inputs
 
     x = DepthwiseConv2D((3, 3),
                         padding='same',
@@ -965,21 +987,15 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
                padding='same',
                use_bias=False,
                strides=(1, 1),
-               name='conv_pw2_%d' % block_id)(x)
-    x = BatchNormalization(axis=channel_axis, name='conv_pw2_%d_bn' % block_id)(x)
+               name='conv_pw_%d' % block_id)(x)
+    x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % block_id)(x)
 
     if strides == (2, 2):
         return x
     else:
-        if input_shape[channel_axis] != pointwise_conv_filters:
-            inputs = Conv2D(pointwise_conv_filters, (1, 1),
-                            padding='same',
-                            use_bias=False,
-                            strides=(1, 1),
-                            name='conv_projection_%d' % (block_id))(inputs)
-            inputs = BatchNormalization(axis=channel_axis, name='conv_projection_%d_bn' % block_id)(inputs)
+        if input_shape[channel_axis] == pointwise_conv_filters:
 
-        x = add([inputs, x])
+            x = add([inputs, x])
 
     return x
 
