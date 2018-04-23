@@ -1,4 +1,4 @@
-# Mobile Networks in Keras
+# Mobile Networks (V1 and V2) in Keras
 
 Keras implementation of the paper [MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf) + ported weights.
 
