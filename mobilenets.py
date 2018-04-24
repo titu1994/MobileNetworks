@@ -763,13 +763,13 @@ def MobileNetV2(input_shape=None,
             alpha_text = '3_5'
 
         if include_top:
-            model_name = 'mobilenet_%s_%d_tf.h5' % (alpha_text, rows)
+            model_name = 'mobilenet_v2_%s_%d_tf.h5' % (alpha_text, rows)
             weigh_path = BASE_WEIGHT_PATH_V2 + model_name
             weights_path = get_file(model_name,
                                     weigh_path,
                                     cache_subdir='models')
         else:
-            model_name = 'mobilenet_%s_%d_tf_no_top.h5' % (alpha_text, rows)
+            model_name = 'mobilenet_v2_%s_%d_tf_no_top.h5' % (alpha_text, rows)
             weigh_path = BASE_WEIGHT_PATH_V2 + model_name
             weights_path = get_file(model_name,
                                     weigh_path,

@@ -13,10 +13,8 @@ if __name__ == '__main__':
     size = 224
     alpha = 1.0
 
-    #model = MobileNet(input_shape=(size, size, 3), alpha=alpha, weights='imagenet')
-
-    model = MobileNetV2((size, size, 3), alpha=alpha, weights=None)
-    model.load_weights('weights/mobilenet_v2_1_0_%d_tf.h5' % (size))
+    # model = MobileNet(input_shape=(size, size, 3), alpha=alpha, weights='imagenet')
+    model = MobileNetV2((size, size, 3), alpha=alpha)
     model.summary()
 
     img_path = 'images/cheetah.jpg'
