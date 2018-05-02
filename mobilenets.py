@@ -679,41 +679,41 @@ def MobileNetV2(input_shape=None,
         else:
             img_input = input_tensor
 
-    x = _conv_block(img_input, 32, alpha, strides=(2, 2))
-    x = _depthwise_conv_block_v2(x, 16, alpha, 1, depth_multiplier, block_id=1)
+    x = _conv_block(img_input, 32, alpha, bn_epsilon=1.1e-5, strides=(2, 2))
+    x = _depthwise_conv_block_v2(x, 16, alpha, 1, depth_multiplier, bn_epsilon=1.1e-5, block_id=1)
 
     x = _depthwise_conv_block_v2(x, 24, alpha, expansion_factor, depth_multiplier, block_id=2,
-                                 strides=(2, 2))
-    x = _depthwise_conv_block_v2(x, 24, alpha, expansion_factor, depth_multiplier, block_id=3)
+                                 bn_epsilon=1.1e-5, strides=(2, 2))
+    x = _depthwise_conv_block_v2(x, 24, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=3)
 
     x = _depthwise_conv_block_v2(x, 32, alpha, expansion_factor, depth_multiplier, block_id=4,
-                                 strides=(2, 2))
-    x = _depthwise_conv_block_v2(x, 32, alpha, expansion_factor, depth_multiplier, block_id=5)
-    x = _depthwise_conv_block_v2(x, 32, alpha, expansion_factor, depth_multiplier, block_id=6)
+                                 bn_epsilon=1.1e-5, strides=(2, 2))
+    x = _depthwise_conv_block_v2(x, 32, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=5)
+    x = _depthwise_conv_block_v2(x, 32, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=6)
 
     x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, block_id=7,
-                                 strides=(2, 2))
-    x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, block_id=8)
-    x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, block_id=9)
-    x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, block_id=10)
+                                 bn_epsilon=1.1e-5, strides=(2, 2))
+    x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=8)
+    x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=9)
+    x = _depthwise_conv_block_v2(x, 64, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=10)
 
-    x = _depthwise_conv_block_v2(x, 96, alpha, expansion_factor, depth_multiplier, block_id=11)
-    x = _depthwise_conv_block_v2(x, 96, alpha, expansion_factor, depth_multiplier, block_id=12)
-    x = _depthwise_conv_block_v2(x, 96, alpha, expansion_factor, depth_multiplier, block_id=13)
+    x = _depthwise_conv_block_v2(x, 96, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=11)
+    x = _depthwise_conv_block_v2(x, 96, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=12)
+    x = _depthwise_conv_block_v2(x, 96, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=13)
 
     x = _depthwise_conv_block_v2(x, 160, alpha, expansion_factor, depth_multiplier, block_id=14,
-                                 strides=(2, 2))
-    x = _depthwise_conv_block_v2(x, 160, alpha, expansion_factor, depth_multiplier, block_id=15)
-    x = _depthwise_conv_block_v2(x, 160, alpha, expansion_factor, depth_multiplier, block_id=16)
+                                 bn_epsilon=1.1e-5, strides=(2, 2))
+    x = _depthwise_conv_block_v2(x, 160, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=15)
+    x = _depthwise_conv_block_v2(x, 160, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=16)
 
-    x = _depthwise_conv_block_v2(x, 320, alpha, expansion_factor, depth_multiplier, block_id=17)
+    x = _depthwise_conv_block_v2(x, 320, alpha, expansion_factor, depth_multiplier, bn_epsilon=1.1e-5, block_id=17)
 
     if alpha <= 1.0:
         penultimate_filters = 1280
     else:
         penultimate_filters = int(1280 * alpha)
 
-    x = _conv_block(x, penultimate_filters, alpha=1.0, kernel=(1, 1), block_id=18)
+    x = _conv_block(x, penultimate_filters, bn_epsilon=1.1e-5, alpha=1.0, kernel=(1, 1), block_id=18)
 
     if include_top:
         if K.image_data_format() == 'channels_first':
@@ -793,7 +793,7 @@ def _make_divisible(v, divisor=8, min_value=8):
     return new_v
 
 
-def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), block_id=1):
+def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), bn_epsilon=1e-3, block_id=1):
     """Adds an initial convolution layer (with batch normalization and relu6).
     # Arguments
         inputs: Input tensor of shape `(rows, cols, 3)`
@@ -821,6 +821,7 @@ def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), block_id=
             all spatial dimensions.
             Specifying any stride value != 1 is incompatible with specifying
             any `dilation_rate` value != 1.
+        bn_epsilon: Epsilon value for BatchNormalization
     # Input shape
         4D tensor with shape:
         `(samples, channels, rows, cols)` if data_format='channels_first'
@@ -843,12 +844,13 @@ def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), block_id=
                use_bias=False,
                strides=strides,
                name='conv%d' % block_id)(inputs)
-    x = BatchNormalization(axis=channel_axis, name='conv%d_bn' % block_id)(x)
+    x = BatchNormalization(axis=channel_axis, epsilon=bn_epsilon, name='conv%d_bn' % block_id)(x)
     return Activation(relu6, name='conv%d_relu' % block_id)(x)
 
 
 def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
-                          depth_multiplier=1, strides=(1, 1), block_id=1):
+                          depth_multiplier=1, strides=(1, 1),
+                          bn_epsilon=1e-3, block_id=1):
     """Adds a depthwise convolution block.
     A depthwise convolution block consists of a depthwise conv,
     batch normalization, relu6, pointwise convolution,
@@ -876,6 +878,7 @@ def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
             all spatial dimensions.
             Specifying any stride value != 1 is incompatible with specifying
             any `dilation_rate` value != 1.
+        bn_epsilon: Epsilon value for BatchNormalization
         block_id: Integer, a unique identification designating the block number.
     # Input shape
         4D tensor with shape:
@@ -900,7 +903,7 @@ def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
                         strides=strides,
                         use_bias=False,
                         name='conv_dw_%d' % block_id)(inputs)
-    x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % block_id)(x)
+    x = BatchNormalization(axis=channel_axis, epsilon=bn_epsilon, name='conv_dw_%d_bn' % block_id)(x)
     x = Activation(relu6, name='conv_dw_%d_relu' % block_id)(x)
 
     x = Conv2D(pointwise_conv_filters, (1, 1),
@@ -908,12 +911,13 @@ def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
                use_bias=False,
                strides=(1, 1),
                name='conv_pw_%d' % block_id)(x)
-    x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % block_id)(x)
+    x = BatchNormalization(axis=channel_axis, epsilon=bn_epsilon, name='conv_pw_%d_bn' % block_id)(x)
     return Activation(relu6, name='conv_pw_%d_relu' % block_id)(x)
 
 
 def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_factor,
-                             depth_multiplier=1, strides=(1, 1), block_id=1):
+                             depth_multiplier=1, strides=(1, 1), bn_epsilon=1e-3,
+                             block_id=1):
     """Adds a depthwise convolution block V2.
     A depthwise convolution V2 block consists of a depthwise conv,
     batch normalization, relu6, pointwise convolution,
@@ -943,6 +947,7 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
             all spatial dimensions.
             Specifying any stride value != 1 is incompatible with specifying
             any `dilation_rate` value != 1.
+        bn_epsilon: Epsilon value for BatchNormalization
         block_id: Integer, a unique identification designating the block number.
     # Input shape
         4D tensor with shape:
@@ -969,7 +974,7 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
                    use_bias=False,
                    strides=(1, 1),
                    name='conv_expand_%d' % block_id)(inputs)
-        x = BatchNormalization(axis=channel_axis, name='conv_expand_%d_bn' % block_id)(x)
+        x = BatchNormalization(axis=channel_axis, epsilon=bn_epsilon, name='conv_expand_%d_bn' % block_id)(x)
         x = Activation(relu6, name='conv_expand_%d_relu' % block_id)(x)
     else:
         x = inputs
@@ -980,7 +985,7 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
                         strides=strides,
                         use_bias=False,
                         name='conv_dw_%d' % block_id)(x)
-    x = BatchNormalization(axis=channel_axis, name='conv_dw_%d_bn' % block_id)(x)
+    x = BatchNormalization(axis=channel_axis, epsilon=bn_epsilon, name='conv_dw_%d_bn' % block_id)(x)
     x = Activation(relu6, name='conv_dw_%d_relu' % block_id)(x)
 
     x = Conv2D(pointwise_conv_filters, (1, 1),
@@ -988,7 +993,7 @@ def _depthwise_conv_block_v2(inputs, pointwise_conv_filters, alpha, expansion_fa
                use_bias=False,
                strides=(1, 1),
                name='conv_pw_%d' % block_id)(x)
-    x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % block_id)(x)
+    x = BatchNormalization(axis=channel_axis, epsilon=bn_epsilon, name='conv_pw_%d_bn' % block_id)(x)
 
     if strides == (2, 2):
         return x
